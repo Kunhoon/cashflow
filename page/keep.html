@@ -1,0 +1,61 @@
+﻿<html>
+	<head>
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Expires" CONTENT="-1">
+		<meta charset="uft-8-bom">
+		<meta http-equiv="Content-Type" content="text/html; charset=uft-8-bom" />
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="https://code.highcharts.com/stock/highstock.js"></script>
+		<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+	</head>
+	<body>
+		<div id="container" style="height: 400px; min-width: 310px" name="left"></div>		
+		<script>
+			var clock = document.getElementById("clock");
+            var now = new Date();
+            var nowTime = now.getFullYear() + (now.getMonth()+1) + now.getDate() + now.getHours() + now.getMinutes() + now.getSeconds();			
+			var cash_chart_url = 'https://kunhoon.github.io/cashflow/data/cash_chart_keep.json?' + nowTime;
+			
+			function draw_origin(){
+				var chartdata = [];
+				//한글을 깨지지 않게 하지 위해서는 html에 utf-8-bom 선언, 그리고 파일 자체 인코딩도 utg-8-bom으로 해줘야 한다. 파워쉘 파일 출력 옵션은 -encoding utf8				
+				$.getJSON(cash_chart_url, function (data) {
+					$.each(data, function(i, item){
+						chartdata.push([item.date*1000, item.open, item.high, item.low, item.close, item.rate]);						
+					});
+				}).done(function(){
+					Highcharts.stockChart('container',{
+						title: {
+							text: '<b>시뮬레이션</b>'
+						},
+						rangeSelector: {
+							buttons: [
+								{type: 'hour',count: 1,text: '1h'}, 
+								{type: 'day',count: 1,text: '1d'}, 
+								{type: 'all',count: 1,text: 'All'}
+							],
+							selected: 2,
+							inputEnabled: true
+						},
+						plotOptions: {
+							candlestick: {
+								downColor: 'blue',
+								upColor: 'red'
+							}
+						},
+						series: [{
+							name: 'CASH FLOW',
+							type: 'candlestick',
+							data: chartdata,
+							tooltip: {
+								valueDecimals: 8
+							}
+						}]
+					});
+				});
+			}
+			draw_origin();
+		</script>		
+	</body>
+</html>

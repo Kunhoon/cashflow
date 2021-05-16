@@ -1,0 +1,250 @@
+﻿<html>
+	<head>
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+		<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Expires" CONTENT="-1">		
+		<meta charset="uft-8-bom">
+		<meta http-equiv="Content-Type" content="text/html; charset=uft-8-bom" />
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="https://code.highcharts.com/stock/highstock.js"></script>
+		<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+	</head>
+	<body>
+		<div id="container" style="height: 400px; min-width: 310px" name="left"></div>
+		<style>th, td {padding:6px;}</style>
+		<table border="1">					
+			<tr>
+				<td><b>Update</b</td>
+				<td id="update"></td>				
+			</tr>
+			<tr>
+				<td><b>Rate</b></td>
+				<td id="rate"></td>
+			</tr>
+			<tr>
+				<td><b>Status</b></td>
+				<td id="status"></td>
+			</tr>
+			<tr>
+				<td><b>Remark</b></td>
+				<td id="remark"></td>
+			</tr>
+		</table>		
+		<br>
+		<table border="1">		
+			<thead>
+				<tr>
+					<th>BT</th>
+					<th>ET</th>
+					<th>BN</th>
+					<th>LT</th>
+					<th>XR</th>
+					<th>DO</th>					
+				</tr>
+			</thead>		
+			<tbody id="market">
+			</tbody>        
+		</table>
+		<br>
+		<table border="1">		
+			<thead>
+				<tr>
+					<th>날짜</th>
+					<th>시가</th>
+					<th>고가</th>
+					<th>저가</th>
+					<th>종가</th>
+					<th>손익</th>
+					<th>비율</th>
+				</tr>
+			</thead>		
+			<tbody id="report">
+			</tbody>        
+		</table>
+		<script>
+			var clock = document.getElementById("clock");
+            var now = new Date();
+            var nowTime = now.getFullYear() + (now.getMonth()+1) + now.getDate() + now.getHours() + now.getMinutes() + now.getSeconds();
+			var info_url = 'https://kunhoon.github.io/cashflow/data/info.json?' + nowTime
+			var cash_chart_url = 'https://kunhoon.github.io/cashflow/data/cash_chart.json?' + nowTime;		
+			var report_url = 'https://kunhoon.github.io/cashflow/data/report.json?' + nowTime;			
+			
+			$(function() {			
+				var target = $('#market');									
+				$.getJSON(info_url, function(data) {
+					$.each(data, function(i, f) {
+						var update = f.update
+						document.getElementById("update").innerHTML = update;
+						var status = f.status
+						document.getElementById("status").innerHTML = status;
+						var remark = f.remark
+						document.getElementById("remark").innerHTML = remark;
+						
+						var add_data = '';
+						add_data += '<tr>';
+						
+						add_data += '<td>';
+						if(f.bt >= 0){
+							add_data += '<font color=red>';
+						}
+						else{
+							add_data += '<font color=blue>';
+						}
+						add_data += f.bt;
+						add_data += '</font></td>';
+
+						add_data += '<td>';
+						if(f.et >= 0){
+							add_data += '<font color=red>';
+						}
+						else{
+							add_data += '<font color=blue>';
+						}
+						add_data += f.et;
+						add_data += '</font></td>';
+
+						add_data += '<td>';
+						if(f.bn >= 0){
+							add_data += '<font color=red>';
+						}
+						else{
+							add_data += '<font color=blue>';
+						}						
+						add_data += f.bn;
+						add_data += '</font></td>';
+						
+						add_data += '<td>';
+						if(f.lt >= 0){
+							add_data += '<font color=red>';
+						}
+						else{
+							add_data += '<font color=blue>';
+						}						
+						add_data += f.lt;
+						add_data += '</font></td>';
+						
+						add_data += '<td>';
+						if(f.xr >= 0){
+							add_data += '<font color=red>';
+						}
+						else{
+							add_data += '<font color=blue>';
+						}						
+						add_data += f.xr;
+						add_data += '</font></td>';	
+						
+						add_data += '<td>';
+						if(f.do >= 0){
+							add_data += '<font color=red>';
+						}
+						else{
+							add_data += '<font color=blue>';
+						}						
+						add_data += f.do;
+						add_data += '</font></td>';	
+						
+						add_data += '</tr>';
+						target.append(add_data);
+					});					
+				});
+			});			
+			
+			$(function() {		
+				var target = $('#report');			
+				$.getJSON(report_url, function(data) {
+					$.each(data, function(i, f) {
+						var add_data = '';
+						add_data += '<tr>';
+
+						add_data += '<td><b>';
+						add_data += f.date;
+						add_data += '</b></td>';
+
+						add_data += '<td>';
+						add_data += f.open;
+						add_data += '</td>';
+
+						add_data += '<td>';
+						add_data += f.high;
+						add_data += '</td>';
+						
+						add_data += '<td>';
+						add_data += f.low;
+						add_data += '</td>';
+						
+						add_data += '<td>';
+						add_data += f.close;
+						add_data += '</td>';											
+
+						if(f.gain >= 0){
+							add_data += '<td><font color=red>+';						
+						}
+						else{
+							add_data += '<td><font color=blue>';						
+						}						
+						add_data += f.gain;
+						add_data += '</font></td>';
+						
+						add_data += '<td>';
+						if(f.rate >= 0){
+							add_data += '+' + f.rate;
+						}
+						else{
+							add_data += f.rate;
+						}
+						add_data += '</td>';
+
+						add_data += '</tr>';
+						target.append(add_data);
+					});					
+				});
+			});
+			
+			function draw_origin(){
+				var chartdata = [];
+				//한글을 깨지지 않게 하지 위해서는 html에 utf-8-bom 선언, 그리고 파일 자체 인코딩도 utg-8-bom으로 해줘야 한다. 파워쉘 파일 출력 옵션은 -encoding utf8				
+				$.getJSON(cash_chart_url, function (data) {
+					$.each(data, function(i, item){
+						chartdata.push([item.date*1000, item.open, item.high, item.low, item.close, item.rate]);
+						if(item.rate >= 0){
+							document.getElementById("rate").innerHTML = "<font color=red>" + item.rate + "</font>";
+						}
+						else{
+							document.getElementById("rate").innerHTML = "<font color=blue>" + item.rate + "</font>";
+						}
+					});
+				}).done(function(){
+					Highcharts.stockChart('container',{
+						title: {
+							text: '<b>무럭무럭 자라라 어서어서 자라라</b>'
+						},
+						rangeSelector: {
+							buttons: [
+								{type: 'hour',count: 1,text: '1h'}, 
+								{type: 'day',count: 1,text: '1d'}, 
+								{type: 'all',count: 1,text: 'All'}
+							],
+							selected: 2,
+							inputEnabled: true
+						},
+						plotOptions: {
+							candlestick: {
+								downColor: 'blue',
+								upColor: 'red'
+							}
+						},
+						series: [{
+							name: 'CASH FLOW',
+							type: 'candlestick',
+							data: chartdata,
+							tooltip: {
+								valueDecimals: 8
+							}
+						}]
+					});
+				});
+			}
+			draw_origin();
+		</script>								
+	</body>
+</html>
